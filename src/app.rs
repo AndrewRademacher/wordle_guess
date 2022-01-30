@@ -19,8 +19,7 @@ impl App {
     }
 
     pub fn run(&mut self) -> Result<()> {
-        println!("Options: {}", self.possible_words.len());
-        println!();
+        self.show_next_options();
         let mut line = String::new();
         loop {
             println!("Enter guess line:\n");
@@ -33,17 +32,31 @@ impl App {
     }
 
     pub fn handle_guess(&mut self, guess: Guess) {
-        // self.filter_not_present(&guess);
+        self.filter_not_present(&guess);
         self.filter_wrong_place_contains(&guess);
         self.filter_wrong_place_position(&guess);
         self.filter_correct(&guess);
     }
 
     pub fn filter_not_present(&mut self, guess: &Guess) {
+        let correct = guess
+            .0
+            .iter()
+            .filter(|x| x.response == Response::Correct)
+            .map(|x| x.letter)
+            .collect::<Vec<_>>();
+        let wrong_place = guess
+            .0
+            .iter()
+            .filter(|x| x.response == Response::WrongPlace)
+            .map(|x| x.letter)
+            .collect::<Vec<_>>();
         let nps = guess
             .0
             .iter()
             .filter(|x| x.response == Response::NotPresent)
+            .filter(|x| !correct.contains(&x.letter))
+            .filter(|x| !wrong_place.contains(&x.letter))
             .collect::<Vec<_>>();
 
         let new_words = self
