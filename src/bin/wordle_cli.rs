@@ -1,10 +1,6 @@
 use anyhow::Result;
 
-use crate::app::App;
-
-mod app;
-mod dictionary;
-mod guess;
+use wordle_guess::app::App;
 
 fn main() -> Result<()> {
     App::new()?.run()
