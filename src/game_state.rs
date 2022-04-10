@@ -1,34 +1,23 @@
-use std::io::stdin;
-
-use anyhow::Result;
-use rand::seq::SliceRandom;
-use rand::thread_rng;
-
 use crate::dictionary::parse_words;
-use crate::guess::{parse_guess, Guess, Response};
+use crate::guess::{Guess, Response};
 
-pub struct App {
+pub struct GameState {
     possible_words: Vec<String>,
 }
 
-impl App {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
+impl GameState {
+    pub fn new() -> Self {
+        Self {
             possible_words: parse_words(),
-        })
+        }
     }
 
-    pub fn run(&mut self) -> Result<()> {
-        self.show_next_options();
-        let mut line = String::new();
-        loop {
-            println!("Enter guess line:\n");
-            line.clear();
-            stdin().read_line(&mut line)?;
-            line.remove(line.len() - 1);
-            self.handle_guess(parse_guess(&line)?);
-            self.show_next_options();
-        }
+    pub fn iter_remaining(&self) -> impl Iterator<Item = &String> {
+        self.possible_words.iter()
+    }
+
+    pub fn possible_words(&self) -> &Vec<String> {
+        &self.possible_words
     }
 
     pub fn handle_guess(&mut self, guess: Guess) {
@@ -132,16 +121,5 @@ impl App {
                 self.possible_words = new_words;
             }
         }
-    }
-
-    pub fn show_next_options(&self) {
-        println!("Remaining: {}", self.possible_words.len());
-        println!("------------------");
-        let mut display = self.possible_words.clone();
-        display.shuffle(&mut thread_rng());
-        for word in display.iter().take(5) {
-            println!("{}", word)
-        }
-        println!();
     }
 }
