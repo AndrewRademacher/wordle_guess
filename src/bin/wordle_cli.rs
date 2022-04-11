@@ -38,7 +38,7 @@ impl Game {
         println!("------------------");
         let mut display = self.state.possible_words().clone();
         display.shuffle(&mut thread_rng());
-        for word in display.iter().take(5) {
+        for word in display.iter().take(10) {
             println!("{}", word)
         }
         println!();
